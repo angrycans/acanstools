@@ -1,0 +1,24 @@
+{
+  "name": "comfyui",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node ./src/client.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@stable-canvas/comfyui-client": "^1.4.1",
+    "axios": "^1.7.9",
+    "base64-js": "^1.5.1",
+    "comfy-ui-client": "^0.1.2",
+    "esm-hook": "^0.1.4",
+    "node-fetch": "^3.3.2",
+    "ts-node": "^10.9.2",
+    "tslib": "^2.8.1",
+    "typescript": "^5.7.3",
+    "ws": "^8.18.0"
+  }
+}

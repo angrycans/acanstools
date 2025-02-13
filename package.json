@@ -10,7 +10,8 @@
   "author": "",
   "license": "ISC",
   "workspaces": [
-    "soundclone"
+    "soundclone",
+    "comfyui"
   ],
   "private": "true"
 }
