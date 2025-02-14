@@ -11,7 +11,8 @@
   "license": "ISC",
   "workspaces": [
     "soundclone",
-    "comfyui"
+    "comfyui",
+    "ai-tools"
   ],
   "private": "true"
 }
