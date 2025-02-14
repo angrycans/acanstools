@@ -1,57 +1,57 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { View } from "@tarojs/components";
-import {
-  Button,
-  ConfigProvider,
-  TextArea,
-  Dialog,
-} from "@nutui/nutui-react-taro";
-import { useAsyncEffect, useRequest } from "ahooks";
-
+import { clsx } from "clsx";
 import "./index.scss";
-import Taro, { useDidShow } from "@tarojs/taro";
-import { useFriendStatus } from "./hooks";
-import { useStore } from "@/store";
-import { useTaroRequest } from "@/tools/useRequest";
-import { Grid } from "@nutui/nutui-react-taro";
-import { Image } from "@nutui/icons-react-taro";
-import { SafeArea } from "@nutui/nutui-react-taro";
 
-function Index() {
-  const [visible, setVisible] = useState(false);
-  const { state, updateState } = useStore();
-
-  useDidShow(() => {
-    console.log("componentDidShow");
-  });
-
-  console.log("Index render");
-
+const rooms = [
+  { name: "音色制作", devices: 4, icon: "🧺" },
+  { name: "虚拟形象", devices: 12, icon: "🛋️" },
+  { name: "BEDROOM", devices: 8, icon: "🛏️" },
+  { name: "BATHROOM", devices: 5, icon: "🛁" },
+  { name: "KITCHEN", devices: 7, icon: "🍽️" },
+  { name: "STUDY", devices: 3, icon: "📚" },
+];
+const Index = () => {
+  const [flag, setFlag] = useState(true);
+  const className = clsx(
+    flag ? "bg-[#123456]" : "bg-[#654321]",
+    "text-white",
+    "after:content-['click_here_to_switch_bg_className']",
+    "p-[13.3333333px]",
+    "rounded-[10086px]"
+  );
+  const logoClass = clsx(
+    "bg-[url(https://pic1.zhimg.com/v2-3ee20468f54bbfefcd0027283b21aaa8_720w.jpg)] bg-[length:100%_100%] bg-no-repeat w-screen h-[41.54vw]"
+  );
   return (
     <>
-      <Grid columns={3}>
-        <Grid.Item text="文字">
-          <Image />
-        </Grid.Item>
-        <Grid.Item text="文字">
-          <Image />
-        </Grid.Item>
-        <Grid.Item text="文字">
-          <Image />
-        </Grid.Item>
-        <Grid.Item text="文字">
-          <Image />
-        </Grid.Item>
-        <Grid.Item text="文字">
-          <Image />
-        </Grid.Item>
-        <Grid.Item text="文字">
-          <Image />
-        </Grid.Item>
-      </Grid>
-      <SafeArea position="bottom" />
+      <div className="min-h-screen bg-gradient-to-b bg-[#a05aff]  p-6">
+        {/* Header */}
+        <div className="text-white text-2xl font-bold mb-4">All Tools</div>
+
+        {/* Grid Layout */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {rooms.map((room, index) => (
+            <div
+              key={index}
+              className="bg-white rounded-2xl shadow-lg p-6 text-center transition-transform duration-300 hover:scale-105 cursor-pointer"
+            >
+              {/* Icon */}
+              <div className="text-4xl mb-2">{room.icon}</div>
+
+              {/* Room Name */}
+              <h3 className="text-lg font-semibold text-gray-700">
+                {room.name}
+              </h3>
+
+              {/* Device Count */}
+              <p className="text-sm text-gray-500">{room.devices} Devices</p>
+            </div>
+          ))}
+        </div>
+      </div>
     </>
   );
-}
+};
 
 export default Index;

@@ -27,7 +27,8 @@
     "dev:rn": "npm run build:rn -- --watch",
     "dev:qq": "npm run build:qq -- --watch",
     "dev:jd": "npm run build:jd -- --watch",
-    "dev:quickapp": "npm run build:quickapp -- --watch"
+    "dev:quickapp": "npm run build:quickapp -- --watch",
+    "postinstall": "weapp-tw patch"
   },
   "browserslist": [
     "last 3 versions",
@@ -54,10 +55,12 @@
     "@tarojs/shared": "4.0.9",
     "@tarojs/taro": "4.0.9",
     "ahooks": "^3.8.4",
+    "clsx": "^2.1.1",
     "immer": "9.0.21",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "use-immer": "^0.11.0"
+    "use-immer": "^0.11.0",
+    "weapp-tailwindcss": "^4.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.8.0",
@@ -82,9 +85,12 @@
     "postcss": "^8.4.18",
     "react-refresh": "^0.11.0",
     "stylelint": "^14.4.0",
-    "ts-node": "^10.9.1",
-    "tsconfig-paths-webpack-plugin": "^4.0.1",
-    "typescript": "^5.1.0",
+    "tailwindcss": "^3.4.15",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths-webpack-plugin": "^4.2.0",
+    "typescript": "^5.6.3",
+    "weapp-ide-cli": "^2.0.6",
+    "weapp-tailwindcss": "^3.7.0",
     "webpack": "5.78.0"
   }
 }
