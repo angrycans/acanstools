@@ -4,15 +4,16 @@
   "description": "next@rc react@rc react-dom@rc",
   "main": "index.js",
   "scripts": {
-    "start:soundclone": "npm run start --workspace soundclone",
+    "start:soundclone": "npm run start --workspace packages/soundclone",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "workspaces": [
-    "soundclone",
-    "comfyui",
-    "ai-tools"
+    "packages/soundclone",
+    "packages/comfyui",
+    "packages/ai-tools",
+    "packages/ai-tools-server"
   ],
   "private": "true"
 }
