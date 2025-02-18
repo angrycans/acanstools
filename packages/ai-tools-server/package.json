@@ -1,0 +1,30 @@
+{
+  "name": "ai-tools-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src .env",
+    "build": "rimraf dist && tsc",
+    "start": "node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cross-env": "^7.0.3",
+    "fastify": "^5.2.1",
+    "nodemon": "^3.1.9"
+  },
+  "devDependencies": {
+    "@sinclair/typebox": "^0.34.25",
+    "ajv": "^8.17.1",
+    "dotenv": "^16.4.7",
+    "fastify-plugin": "^5.0.1",
+    "prettier": "^3.5.1",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
