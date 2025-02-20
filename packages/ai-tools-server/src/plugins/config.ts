@@ -16,6 +16,7 @@ const ConfigSchema = Type.Object({
   API_HOST: Type.String(),
   API_PORT: Type.String(),
   MONGODB: Type.String(),
+  UPLOAD_DIR: Type.String(),
 });
 
 const ajv = new Ajv({

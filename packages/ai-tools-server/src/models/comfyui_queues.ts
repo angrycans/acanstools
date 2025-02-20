@@ -1,22 +1,23 @@
-import { Schema, model } from "mongoose";
+import { timeStamp } from "console";
+import { Schema, model,Date } from "mongoose";
 
-export interface ICar {
-  title: string;
-  brand: string;
-  price: string;
-  age: number;
-  services: Map<string, string>;
-}
+const fileSchema = new Schema(
+  { iname: String ,
+  type:String,
+  path:String},
+  { _id: false } // <-- disable `_id`
+);
 
-const carSchema = new Schema<ICar>({
-  title: String,
-  brand: String,
-  price: String,
-  age: Number,
-  services: {
-    type: Map,
-    of: String,
-  },
+
+const ComfyuiQueueSchema = new Schema({
+  client_id: String, 
+  workflow: String,
+  status: Number,
+  creat_at: { type: Date, default: Date.now },
+  msg:String,
+  user_open_id:String,
+  user_mobile:String,
+  files:[fileSchema]
 });
 
-export default model<ICar>("Car", carSchema);
+export default model("ComfyuiQueue", ComfyuiQueueSchema);

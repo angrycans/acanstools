@@ -30,8 +30,8 @@ function successResponseNoData(msg?: string): ApiResponse<void> {
  * @param msg The error message.
  * @returns ApiResponse with specified err code and message, no data.
  */
-function errorResponse(errCode: number, msg: string): ApiResponse<void> {
-  return { err: errCode, msg };
+function errorResponse( msg: string): ApiResponse<void> {
+  return { err: -1, msg };
 }
 
 export { successResponse, successResponseNoData, errorResponse };
