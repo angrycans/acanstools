@@ -1,4 +1,6 @@
 import fastify from "fastify";
+import mongoose from "mongoose";
+
 import config from "./plugins/config";
 
 import router from "./router";
@@ -22,6 +24,11 @@ await server.ready();
 
 const port = +server.config.API_PORT;
 const host = server.config.API_HOST;
-server.listen({ host, port });
-
-console.log(`🚀  AI-tools-server running on port :${port}`);
+mongoose
+  .connect(`${server.config.MONGODB}`, { socketTimeoutMS: 10000 })
+  .then(() => {
+    server.log.info("MongoDB connected...");
+    server.listen({ host, port });
+    server.log.info(`🚀  AI-tools-server running on port :${port}`);
+  })
+  .catch((err) => server.log.error(err));
