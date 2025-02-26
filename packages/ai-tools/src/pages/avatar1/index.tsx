@@ -1,4 +1,4 @@
-import { Video, View } from "@tarojs/components";
+import { Video, View, ScrollView } from "@tarojs/components";
 import { clsx } from "clsx";
 import "./index.scss";
 import React, { useState } from "react";
@@ -12,11 +12,13 @@ import {
   Button,
   Switch,
 } from "@nutui/nutui-react-taro";
-import { ArrowRight, User } from "@nutui/icons-react-taro";
+import { ArrowRight, PlayStart, User } from "@nutui/icons-react-taro";
 import Taro from "@tarojs/taro";
 
+import ComfyUIStatus from "@/components/comfyui-status/index";
+
 const Index = () => {
-  const [checkedAsync, setCheckedAsync] = useState(true);
+  const [checkedAsync, setCheckedAsync] = useState(false);
 
   const [visible, setVisible] = useState(false);
   const [baseDesc, setBaseDesc] = useState("");
@@ -52,154 +54,186 @@ const Index = () => {
     console.log("beforeUpload");
     const allowedTypes = ["image/png"];
     const filteredFiles = Array.from(files).filter((file) =>
-      allowedTypes.includes(file.type)
+      allowedTypes.includes(file.type),
     );
     return filteredFiles;
   };
+
+  const scrollStyle = {
+    height: "150px",
+  };
+  const scrollTop = 0;
+  const Threshold = 20;
+  const vStyleA = {
+    height: "150px",
+    backgroundColor: "rgb(26, 173, 25)",
+  };
+  const vStyleB = {
+    height: "150px",
+    backgroundColor: "rgb(39,130,215)",
+  };
+  const vStyleC = {
+    height: "150px",
+    backgroundColor: "rgb(241,241,241)",
+    color: "#333",
+  };
   return (
-    <>
-      <div>
-        <div>
-          <Video
-            id="video"
-            className="w-full h-screen-quarter" // Full width, 1/4 screen height
-            src="http://192.168.2.20:7002/view?filename=latentsync_00004-audio.mp4"
-            //poster="http://192.168.2.20:7002/view?filename=ComfyUI_00013_.png"
-            initialTime={0}
-            controls={true}
-            autoplay={false}
-            loop={false}
-            muted={false}
-          />
-        </div>
-      </div>
+    <View className="page_layout">
+      <View className="workspace scroll">
+        <ComfyUIStatus />
+        <View>
+          <View>
+            <Video
+              id="video"
+              className="w-full h-screen-quarter" // Full width, 1/4 screen height
+              src="http://192.168.2.20:7002/view?filename=latentsync_00004-audio.mp4"
+              //poster="http://192.168.2.20:7002/view?filename=ComfyUI_00013_.png"
+              initialTime={0}
+              controls={true}
+              autoplay={false}
+              loop={false}
+              muted={false}
+            />
+          </View>
+        </View>
 
-      <Cell.Group>
-        <Cell
-          title="预定义音色/上传音频"
-          align="flex-end"
-          extra={
-            <Switch
-              checked={checkedAsync}
-              onChange={(value, event) => {
-                console.log(value, event);
-                setCheckedAsync(value);
-              }}
-            />
-          }
-        />
-        {checkedAsync && (
-          <>
-            <Cell
-              className="nutui-cell-clickable"
-              title={
-                <div style={{ display: "inline-flex", alignItems: "center" }}>
-                  <User />
-                  <span style={{ marginLeft: "5px" }}></span>
-                </div>
-              }
-              align="flex-end"
-              onClick={() => setVisible(!visible)}
-              extra={<ArrowRight />}
-            />
-            <Picker
-              title="选择音色"
-              visible={visible}
-              options={listData1}
-              onConfirm={(list, values) => confirmPicker(list, values)}
-              onClose={() => setVisible(false)}
-              onChange={changePicker}
-            />
-          </>
-        )}
-
-        {!checkedAsync && (
+        <Cell.Group>
           <Cell
-            title="音频文件"
+            title="参考音频/预定义音色"
+            align="flex-end"
             extra={
-              <>
-                <Button
-                  openType="share"
-                  onClick={() => {
-                    console.log("Button clicked");
-                    tt.filePicker({
-                      maxNum: 10,
-                      pickerTitle: "Select a file",
-                      pickerConfirm: "Confirm",
-                      isSystem: false,
-                      success(res) {
-                        console.log(JSON.stringify(res));
-
-                        Taro.uploadFile({
-                          url: "http://192.168.2.20:7002/upload/image",
-                          filePath: res.list[0].path,
-                          name: "image",
-                          // formData: {
-                          //   overwrite: "true",
-                          // },
-                          success(res) {
-                            const data = res.data;
-                            //do something
-                          },
-                        });
-                      },
-                      fail(res) {
-                        console.log(`filePicker fail: ${JSON.stringify(res)}`);
-                      },
-                    });
-                  }}
-                >
-                  上传音频
-                </Button>
-              </>
+              <Switch
+                checked={checkedAsync}
+                onChange={(value, event) => {
+                  console.log(value, event);
+                  setCheckedAsync(value);
+                }}
+              />
             }
           />
-        )}
-      </Cell.Group>
+          {checkedAsync && (
+            <>
+              <Cell
+                className="nutui-cell-clickable"
+                title={
+                  <View
+                    style={{ display: "inline-flex", alignItems: "center" }}
+                  >
+                    <User />
+                    <span style={{ marginLeft: "5px" }}></span>
+                  </View>
+                }
+                align="flex-end"
+                onClick={() => setVisible(!visible)}
+                extra={<ArrowRight />}
+              />
+              <Picker
+                title="选择音色"
+                visible={visible}
+                options={listData1}
+                onConfirm={(list, values) => confirmPicker(list, values)}
+                onClose={() => setVisible(false)}
+                onChange={changePicker}
+              />
+            </>
+          )}
 
-      <Cell title="人物语音文本" />
-      <TextArea
-        defaultValue=""
-        className="text-1"
-        style={{ fontSize: "12px" }}
-        onChange={(value) => console.log("change", value)}
-        onBlur={() => console.log("blur")}
-        onFocus={() => console.log("focus")}
-      />
+          {!checkedAsync && (
+            <Cell
+              title="音频文件"
+              extra={
+                <>
+                  <Button
+                    size="mini"
+                    icon={<PlayStart />}
+                    type="primary"
+                  ></Button>
+                  <Button
+                    openType="share"
+                    onClick={() => {
+                      console.log("Button clicked");
+                      tt.filePicker({
+                        maxNum: 10,
+                        pickerTitle: "Select a file",
+                        pickerConfirm: "Confirm",
+                        isSystem: false,
+                        success(res) {
+                          console.log(JSON.stringify(res));
 
-      <Cell
-        title="视频"
-        align="flex-end"
-        extra={
-          <Button
-            openType="share"
-            onClick={() => {
-              console.log("Button clicked");
-              tt.filePicker({
-                maxNum: 10,
-                pickerTitle: "Select a file",
-                pickerConfirm: "Confirm",
-                isSystem: false,
-                success(res) {
-                  console.log(JSON.stringify(res));
-                },
-                fail(res) {
-                  console.log(`filePicker fail: ${JSON.stringify(res)}`);
-                },
-              });
-            }}
-          >
-            上传视频
+                          Taro.uploadFile({
+                            //url: "http://192.168.2.20:7002/upload/image",
+                            url: "http://192.168.2.20:7003/api/v1/file/upload",
+                            filePath: res.list[0].path,
+                            name: "image",
+                            // formData: {
+                            //   overwrite: "true",
+                            // },
+                            success(res) {
+                              const data = res.data;
+                              //do something
+                            },
+                          });
+                        },
+                        fail(res) {
+                          console.log(
+                            `filePicker fail: ${JSON.stringify(res)}`,
+                          );
+                        },
+                      });
+                    }}
+                  >
+                    上传音频
+                  </Button>
+                </>
+              }
+            />
+          )}
+        </Cell.Group>
+
+        <Cell title="想说的话" />
+        <TextArea
+          defaultValue=""
+          className="text-1"
+          style={{ fontSize: "12px" }}
+          onChange={(value) => console.log("change", value)}
+          onBlur={() => console.log("blur")}
+          onFocus={() => console.log("focus")}
+        />
+
+        <Cell
+          title="视频"
+          align="flex-end"
+          extra={
+            <Button
+              openType="share"
+              onClick={() => {
+                console.log("Button clicked");
+                tt.filePicker({
+                  maxNum: 10,
+                  pickerTitle: "Select a file",
+                  pickerConfirm: "Confirm",
+                  isSystem: false,
+                  success(res) {
+                    console.log(JSON.stringify(res));
+                  },
+                  fail(res) {
+                    console.log(`filePicker fail: ${JSON.stringify(res)}`);
+                  },
+                });
+              }}
+            >
+              上传视频
+            </Button>
+          }
+        />
+
+        <View className="mx-2.5">
+          <Button block type="primary">
+            AI
           </Button>
-        }
-      />
-
-      <View className="mx-2.5">
-        <Button block type="primary">
-          AI
-        </Button>
+        </View>
       </View>
-    </>
+    </View>
   );
 };
 
