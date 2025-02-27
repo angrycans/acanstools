@@ -12,10 +12,11 @@ import {
   Button,
   Switch,
 } from "@nutui/nutui-react-taro";
-import { ArrowRight, PlayStart, User } from "@nutui/icons-react-taro";
+import { ArrowRight, User } from "@nutui/icons-react-taro";
 import Taro from "@tarojs/taro";
 
 import ComfyUIStatus from "@/components/comfyui-status/index";
+import AudioUpload from "@/components/audio-upload/index";
 
 const Index = () => {
   const [checkedAsync, setCheckedAsync] = useState(false);
@@ -59,24 +60,6 @@ const Index = () => {
     return filteredFiles;
   };
 
-  const scrollStyle = {
-    height: "150px",
-  };
-  const scrollTop = 0;
-  const Threshold = 20;
-  const vStyleA = {
-    height: "150px",
-    backgroundColor: "rgb(26, 173, 25)",
-  };
-  const vStyleB = {
-    height: "150px",
-    backgroundColor: "rgb(39,130,215)",
-  };
-  const vStyleC = {
-    height: "150px",
-    backgroundColor: "rgb(241,241,241)",
-    color: "#333",
-  };
   return (
     <View className="page_layout">
       <View className="workspace scroll">
@@ -138,56 +121,7 @@ const Index = () => {
             </>
           )}
 
-          {!checkedAsync && (
-            <Cell
-              title="音频文件"
-              extra={
-                <>
-                  <Button
-                    size="mini"
-                    icon={<PlayStart />}
-                    type="primary"
-                  ></Button>
-                  <Button
-                    openType="share"
-                    onClick={() => {
-                      console.log("Button clicked");
-                      tt.filePicker({
-                        maxNum: 10,
-                        pickerTitle: "Select a file",
-                        pickerConfirm: "Confirm",
-                        isSystem: false,
-                        success(res) {
-                          console.log(JSON.stringify(res));
-
-                          Taro.uploadFile({
-                            //url: "http://192.168.2.20:7002/upload/image",
-                            url: "http://192.168.2.20:7003/api/v1/file/upload",
-                            filePath: res.list[0].path,
-                            name: "image",
-                            // formData: {
-                            //   overwrite: "true",
-                            // },
-                            success(res) {
-                              const data = res.data;
-                              //do something
-                            },
-                          });
-                        },
-                        fail(res) {
-                          console.log(
-                            `filePicker fail: ${JSON.stringify(res)}`,
-                          );
-                        },
-                      });
-                    }}
-                  >
-                    上传音频
-                  </Button>
-                </>
-              }
-            />
-          )}
+          {!checkedAsync && <Cell title="音频文件" extra={<AudioUpload />} />}
         </Cell.Group>
 
         <Cell title="想说的话" />
