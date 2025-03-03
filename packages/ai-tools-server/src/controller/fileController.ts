@@ -19,6 +19,15 @@ function renameFilename(originalFilename: string): string {
 }
 
 
+function generateUrlFromPath(filePath: string): string {
+  const baseUrl = "http://192.168.2.20:7002/view?";
+  const filename = filePath.substring(filePath.lastIndexOf('/') + 1); // 提取文件名
+  const subfolder = filePath.substring(filePath.indexOf('input/') + 'input/'.length, filePath.lastIndexOf('/')); // 提取子文件夹
+
+  const url = `${baseUrl}filename=${filename}&subfolder=${subfolder}&type=input`;
+  return url;
+}
+
 export default async function TestController(fastify: FastifyInstance) {
   // /api/v1/file
   fastify.get("/", async function (_request: FastifyRequest, reply: FastifyReply) {
@@ -44,7 +53,7 @@ export default async function TestController(fastify: FastifyInstance) {
 
 
 
-      reply.send(successResponse(path))
+      reply.send(successResponse(generateUrlFromPath(path)))
     } catch (err) {
        reply.send(errorResponse(err.message))
     }

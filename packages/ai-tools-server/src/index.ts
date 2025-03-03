@@ -2,14 +2,26 @@ import fastify from "fastify";
 import mongoose from "mongoose";
 import multipart from '@fastify/multipart'
 import formbody from '@fastify/formbody'
+import * as fs from 'fs';  
+import path, { resolve } from "path";
 
+import { fileURLToPath } from "url";
 
 
 import config from "./plugins/config";
 
 import router from "./router";
 
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+//console.log(path.join(__dirname, 'key.pem'))
+
 export const server = fastify({
+  // https: {
+  //   key: fs.readFileSync(path.join(__dirname, '../assets/private-key.pem')), // 读取私钥文件
+  //   cert: fs.readFileSync(path.join(__dirname, '../assets/certificate.pem')) // 读取证书文件
+  // },
   ajv: {
     customOptions: {
       removeAdditional: "all",
