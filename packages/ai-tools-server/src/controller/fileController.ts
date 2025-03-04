@@ -3,6 +3,8 @@ import { Document } from "mongoose";
 import Car, { ICar } from "../models/car";
 import {successResponse,errorResponse}from "@/utils/api-response"
 import * as fs from 'fs';  
+import { pipeline } from 'node:stream/promises';
+
 
 import {server} from "@/index"
 
@@ -49,7 +51,8 @@ export default async function TestController(fastify: FastifyInstance) {
         const writeStream = fs.createWriteStream(path);  
 
         console.log("file",file)
-        file.file.pipe(writeStream);  
+       // await file.file.pipe(writeStream);  
+       await pipeline(file?.file, writeStream)
 
 
 
