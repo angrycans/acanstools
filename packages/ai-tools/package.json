@@ -22,7 +22,7 @@
     "dev:weapp": "npm run build:weapp -- --watch",
     "dev:swan": "npm run build:swan -- --watch",
     "dev:alipay": "npm run build:alipay -- --watch",
-    "dev:tt": "npm run build:tt -- --watch",
+    "dev:tt": "TARO_DEBUG_WATCH=1 npm run build:tt -- --watch",
     "dev:h5": "npm run build:h5 -- --watch",
     "dev:rn": "npm run build:rn -- --watch",
     "dev:qq": "npm run build:qq -- --watch",
@@ -56,9 +56,11 @@
     "@tarojs/taro": "4.0.9",
     "ahooks": "^3.8.4",
     "clsx": "2.1.1",
+    "dotenv-webpack": "^8.1.0",
     "immer": "9.0.21",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "taro-fetch-polyfill": "^0.5.0",
     "use-immer": "^0.11.0"
   },
   "devDependencies": {

@@ -5,7 +5,7 @@
   "appid": "cli_a724240555b8d00e",
   "setting": {
     "urlCheck": true,
-    "es6": false,
+    "es6": true,
     "postcss": false,
     "minified": false
   },

@@ -4,7 +4,12 @@ import "./index.scss";
 import React, { useState } from "react";
 
 const rooms = [
-  { name: "音色制作", devices: 4, icon: "🧺" },
+  {
+    name: "音色制作",
+    devices: 4,
+    icon: "🧺",
+    url: "/pages/audio2timbre/index",
+  },
   { name: "虚拟形象", devices: 12, icon: "🛋️", url: "/pages/avatar1/index" },
   { name: "BEDROOM", devices: 8, icon: "🛏️" },
   { name: "BATHROOM", devices: 5, icon: "🛁" },

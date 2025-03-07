@@ -12,16 +12,20 @@ import {
   Button,
   Switch,
 } from "@nutui/nutui-react-taro";
-import { ArrowRight, User } from "@nutui/icons-react-taro";
+import { ArrowRight, Refresh, User } from "@nutui/icons-react-taro";
 import Taro from "@tarojs/taro";
 
 import ComfyUIStatus from "@/components/comfyui-status/index";
 import AudioUpload from "@/components/audio-upload/index";
+import VideoUpload from "@/components/video-upload/index";
 
 const Index = () => {
   const [checkedAsync, setCheckedAsync] = useState(false);
 
   const [visible, setVisible] = useState(false);
+  const [AudioValue, setAudioValue] = useState();
+  const [VideoValue, setVideoValue] = useState();
+
   const [baseDesc, setBaseDesc] = useState("");
   const listData1 = [
     [
@@ -60,15 +64,20 @@ const Index = () => {
     return filteredFiles;
   };
 
+  console.log("avatar1/index.tsx", AudioValue, VideoValue);
+
   return (
     <View className="page_layout">
       <View className="workspace scroll">
         <ComfyUIStatus />
         <View>
           <View>
-            <Video
+            {/* <span className="h-[225px] justify-center items-center flex bg-black">
+              <Refresh className="nut-icon-am-rotate nut-icon-am-infinite" />
+            </span> */}
+            {/* <Video
               id="video"
-              className="w-full h-screen-quarter" // Full width, 1/4 screen height
+              className="w-full" // Full width, 1/4 screen height
               src="http://192.168.2.20:7002/view?filename=latentsync_00004-audio.mp4"
               //poster="http://192.168.2.20:7002/view?filename=ComfyUI_00013_.png"
               initialTime={0}
@@ -76,7 +85,7 @@ const Index = () => {
               autoplay={false}
               loop={false}
               muted={false}
-            />
+            /> */}
           </View>
         </View>
 
@@ -121,7 +130,15 @@ const Index = () => {
             </>
           )}
 
-          {!checkedAsync && <Cell title="音频文件" extra={<AudioUpload />} />}
+          {!checkedAsync && (
+            <Cell
+              align="center"
+              title="音频文件"
+              extra={
+                <AudioUpload value={AudioValue} onChange={setAudioValue} />
+              }
+            />
+          )}
         </Cell.Group>
 
         <Cell title="想说的话" />
@@ -137,32 +154,17 @@ const Index = () => {
         <Cell
           title="视频"
           align="flex-end"
-          extra={
-            <Button
-              openType="share"
-              onClick={() => {
-                console.log("Button clicked");
-                tt.filePicker({
-                  maxNum: 10,
-                  pickerTitle: "Select a file",
-                  pickerConfirm: "Confirm",
-                  isSystem: false,
-                  success(res) {
-                    console.log(JSON.stringify(res));
-                  },
-                  fail(res) {
-                    console.log(`filePicker fail: ${JSON.stringify(res)}`);
-                  },
-                });
-              }}
-            >
-              上传视频
-            </Button>
-          }
+          extra={<VideoUpload value={VideoValue} onChange={setVideoValue} />}
         />
 
         <View className="mx-2.5">
-          <Button block type="primary">
+          <Button
+            block
+            type="primary"
+            onClick={() => {
+              console.log("submit", AudioValue);
+            }}
+          >
             AI
           </Button>
         </View>

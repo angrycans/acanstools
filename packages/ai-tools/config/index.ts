@@ -4,6 +4,14 @@ import devConfig from "./dev";
 import prodConfig from "./prod";
 import path from "path";
 import { UnifiedWebpackPluginV5 } from "weapp-tailwindcss/webpack";
+// const IncrementVersionPlugin = require("./webpack-plugins/IncrementVersionPlugin"); // 引入自定义插件
+const webpack = require("webpack");
+const Dotenv = require("dotenv-webpack");
+var __DEV_VERSION__ = 1;
+console.log(
+  path.resolve(__dirname, "../IncrementVersionPlugin.js"),
+  path.resolve(__dirname, "../.env.development"),
+);
 
 // https://taro-docs.jd.com/docs/next/config#defineconfig-辅助函数
 export default defineConfig<"webpack5">(async (merge, { command, mode }) => {
@@ -19,7 +27,10 @@ export default defineConfig<"webpack5">(async (merge, { command, mode }) => {
     },
     sourceRoot: "src",
     outputRoot: "dist",
-    plugins: ["@tarojs/plugin-html"],
+    plugins: [
+      "@tarojs/plugin-html",
+      "/Users/Acans/Documents/github/acanstools/packages/ai-tools/IncrementVersionPlugin",
+    ],
     defineConstants: {},
     copy: {
       patterns: [],
@@ -54,6 +65,49 @@ export default defineConfig<"webpack5">(async (merge, { command, mode }) => {
         },
       },
       webpackChain(chain) {
+        chain;
+
+        chain.watchOptions({
+          ignored: [
+            // 精确匹配文件（推荐绝对路径）
+            path.resolve(__dirname, "../src/version.json"),
+            // 通配符匹配模式
+            "**/version.json",
+          ],
+          // 防抖处理（重要！）
+          aggregateTimeout: 600,
+        });
+        chain.plugin("dotenv").use(Dotenv, [
+          {
+            path: path.resolve(__dirname, "../.env.development"),
+            systemvars: true,
+            watch: true, // 开启文件监听
+          },
+        ]);
+
+        // chain.devServer.watchOptions({
+
+        //   aggregateTimeout: 500,
+        //   poll: 1000,
+        //   followSymlinks: true,
+        //   files: [".env.development"], // 监控文件
+        //   ignored: [
+        //     "**/version.json", // 忽略 version.json 自身变化
+        //     "node_modules",
+        //     "src/version.json", // 忽略 version.json 自身变化
+        //   ],
+        // });
+
+        chain.plugin("define").use(webpack.DefinePlugin, [
+          {
+            "process.env": JSON.stringify({
+              ...require("dotenv").config({ path: ".env.development" }).parsed,
+              TARO_ENV: process.env.TARO_ENV,
+              TARO_APP_DEV_VERSION2: __DEV_VERSION__ + "",
+            }),
+          },
+        ]);
+
         chain.resolve.plugin("tsconfig-paths").use(TsconfigPathsPlugin);
         chain.merge({
           plugin: {

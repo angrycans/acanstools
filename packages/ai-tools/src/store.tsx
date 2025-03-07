@@ -14,6 +14,7 @@ export interface StateContextType {
 
 const defaultState = {
   count: 0,
+  username: "",
 };
 // 创建一个 context 对象并导出其 Provider 和 Consumer
 const StateContext = createContext<StateContextType | null>(null);

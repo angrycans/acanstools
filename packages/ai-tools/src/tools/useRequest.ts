@@ -34,15 +34,22 @@ export const useTaroRequest = (
   { url, method = "GET", params = {} }: requestOptions,
   reqConfig?: configOptions
 ) => {
-  const { manual } = reqConfig || {};
+
+  const { manual } = reqConfig || { manual: true };
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   //const { baseUrl, header, ...otherConfig } = config || {};
 
-  const run = async () => {
+  const run = async (reqParams?: any) => {
     try {
+      if (reqParams) {
+        method = "POST"
+        params = reqParams;
+      }
+      console.log("useTaroRequest", url, method, params, manual);
+
       setLoading(true);
       const response = await request({
         method,
@@ -52,6 +59,8 @@ export const useTaroRequest = (
           contentType: "application/json",
         },
       });
+
+      console.log("response", response)
 
       setData(
         response.data

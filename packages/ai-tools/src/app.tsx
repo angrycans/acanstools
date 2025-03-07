@@ -4,37 +4,53 @@ import { StoreProvider, useStore } from "./store";
 // 全局样式
 import "./app.scss";
 import "@nutui/nutui-react-taro/dist/style.css";
+import devVersion from "./dev-version.json";
+import { Toast } from "@nutui/nutui-react-taro";
 
 const Root = ({ children }: { children: React.ReactNode }) => {
+  const { state, updateState } = useStore();
+
   useDidShow(async () => {
     // const ret1 = await tt.login({
     //   scopeList: ["auth:user.id:read"],
     //   state: "random_state", // 用于维护请求状态
     // });
 
+    console.log("__DEV_VERSION__", devVersion.version);
+
     tt.requestAccess({
       scopeList: ["auth:user.id:read"],
       appID: "cli_a724240555b8d00e", // 网页应用必传
       success(res) {
         console.log(JSON.stringify(res));
+        tt.login({
+          async success(res: any) {
+            console.log("tt.login ok", res);
+            tt.getUserInfo({
+              withCredentials: true,
+              success(res) {
+                console.log("tt.getUserInfo", res);
+                updateState((draft) => {
+                  draft.username = JSON.parse(res.rawData).nickName;
+                });
+              },
+              fail(res) {
+                console.log(`getUserInfo fail: ${JSON.stringify(res)}`);
 
-        tt.getUserInfo({
-          withCredentials: true,
-          success(res) {
-            console.log(JSON.stringify(res));
+                // Taro.request({
+                //   url: "http://127.0.0.1:7003/api/v1/lark/login/" + res.code,
+                //   header: {
+                //     "content-type": "application/json", // 默认值
+                //   },
+                //   success: function (res) {
+                //     console.log("/api/v1/lark/login/", res.data);
+                //   },
+                // });
+              },
+            });
           },
-          fail(res) {
-            console.log(`getUserInfo fail: ${JSON.stringify(res)}`);
-          },
-        });
-
-        Taro.request({
-          url: "http://127.0.0.1:7003/api/v1/lark/login/" + res.code,
-          header: {
-            "content-type": "application/json", // 默认值
-          },
-          success: function (res) {
-            console.log(res.data);
+          fail(res: any) {
+            console.log("tt.login err", res);
           },
         });
       },
