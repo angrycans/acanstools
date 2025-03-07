@@ -15,7 +15,7 @@ const randomInt = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
-export const seed = () => randomInt(10000000000, 999999999999);
+export const seed = () => randomInt(1000, 9999);
 
 export default async function TestController(fastify: FastifyInstance) {
   // /api/v1/comfyui
@@ -45,12 +45,14 @@ export default async function TestController(fastify: FastifyInstance) {
 
         const audio2TimbreWorkflow = new PromptBuilder(
           audio2Timbre,
-          ["audio", "speaker_name", "prompt"],
+          ["audio", "speaker_name", "prompt", "seed"],
           ["audio"],
         )
           .setInputNode("audio", "5.inputs.audio")
           .setInputNode("speaker_name", "8.inputs.speaker_name")
           .setInputNode("prompt", "9.inputs.string")
+          .setInputNode("seed", "6.inputs.seed")
+
           .setOutputNode("audio", "7")
 
         console.log("audio2TimbreWorkflow end")
@@ -59,6 +61,7 @@ export default async function TestController(fastify: FastifyInstance) {
           .input("audio", audio)
           .input("prompt", prompt)
           .input("speaker_name", speaker_name)
+          .input("seed", seed())
         console.log("workflow end")
 
 
