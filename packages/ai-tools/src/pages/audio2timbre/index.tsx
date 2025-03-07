@@ -49,6 +49,8 @@ const Index = () => {
   const { state, updateState } = useStore();
 
   const [AudioValue, setAudioValue] = useState("");
+  const [outAudio, setOutAudio] = useState("");
+
   const [speaker_name, setSpeakName] = useState("");
   const [prompt, setPrompt] = useState("");
   const [showRet, setShowRet] = useState(false);
@@ -73,6 +75,7 @@ const Index = () => {
 
     if (data) {
       setShowRet(true);
+      setOutAudio(data);
     }
   }, [data]);
 
@@ -110,6 +113,9 @@ const Index = () => {
             type="primary"
             onClick={async () => {
               console.log("audio2timbre", AudioValue, prompt, speaker_name);
+              setShowRet(false);
+              setOutAudio("");
+
               if (!AudioValue.trim()) {
                 Toast.show("root", {
                   content: "音频文件参数缺失",
@@ -162,10 +168,10 @@ const Index = () => {
             AI
           </Button>
           <View
-            className={`w-full h-[100px] flex justify-center items-center bg-gray-100 ${!showRet ? "block" : "hidden"}`}
+            className={`w-full h-[100px] flex justify-center items-center bg-gray-100 ${showRet ? "block" : "hidden"}`}
           >
             <AudioPlay
-              value={data}
+              value={outAudio}
               // value={{
               //   audio: {
               //     audio: [

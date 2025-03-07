@@ -81,6 +81,16 @@ const Index = ({ value }) => {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0); // 示例总时长2分2秒
 
+  const reset = () => {
+    setPlaystatus({ duration: 0, playing: false });
+    setCurrentTime(0);
+    setDuration(0);
+    if (AinnerAudioContextRef.current) {
+      AinnerAudioContextRef.current.destroy;
+      AinnerAudioContextRef.current = null;
+    }
+  };
+
   const onPlay = () => {
     if (!playstatus.playing) {
       AinnerAudioContextRef.current.play();
@@ -130,9 +140,21 @@ const Index = ({ value }) => {
         AinnerAudioContextRef.current.src = src;
 
         console.log("createInnerAudioContext", AinnerAudioContextRef.current);
-        AinnerAudioContextRef.current.onEnded(() => {});
+        AinnerAudioContextRef.current.onEnded(() => {
+          setPlaystatus({
+            duration: AinnerAudioContextRef.current.duration,
+            playing: false,
+          });
+
+          setCurrentTime(0);
+        });
         AinnerAudioContextRef.current.onTimeUpdate((e) => {
-          console.log("onTimeUpdate", e);
+          console.log(
+            "onTimeUpdate",
+            e / AinnerAudioContextRef.current.duration,
+          );
+          setCurrentTime(e);
+          //   setDuration(
         });
 
         AinnerAudioContextRef.current.onPlay(() => {
@@ -180,6 +202,9 @@ const Index = ({ value }) => {
           }
         });
       }
+    } else {
+      console.log("audioPlay reset");
+      reset();
     }
   }, [value]);
 
@@ -193,11 +218,11 @@ const Index = ({ value }) => {
         )}
 
         <span className="text-sm font-medium">
-          {formatTime(currentTime)} / {formatTime(playstatus.duration)}
+          {formatTime(currentTime / 1000)} / {formatTime(playstatus.duration)}
         </span>
 
         <View className="flex-1 px-4">
-          <Progress percent={10} />
+          <Progress percent={currentTime / playstatus.duration / 10} />
         </View>
         <Download />
       </View>
