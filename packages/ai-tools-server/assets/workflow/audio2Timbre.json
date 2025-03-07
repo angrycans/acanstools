@@ -1,0 +1,101 @@
+{
+  "3": {
+    "inputs": {
+      "console": false,
+      "display": true,
+      "prefix": "",
+      "any_value": [
+        "4",
+        0
+      ]
+    },
+    "class_type": "Show any [Crystools]",
+    "_meta": {
+      "title": "🪛 Show any value to console/display"
+    }
+  },
+  "4": {
+    "inputs": {
+      "auto_download": false,
+      "use_fast_mode": false,
+      "punc_segment": false,
+      "audio": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "SenseVoiceNode",
+    "_meta": {
+      "title": "SenseVoice 语音识别"
+    }
+  },
+  "5": {
+    "inputs": {
+      "audio": "lihaibao.mp3"
+    },
+    "class_type": "LoadAudio",
+    "_meta": {
+      "title": "加载音频"
+    }
+  },
+  "6": {
+    "inputs": {
+      "auto_download": false,
+      "tts_text": [
+        "9",
+        0
+      ],
+      "speed": 1,
+      "seed": 771,
+      "text_frontend": true,
+      "polyreplace": false,
+      "prompt_text": [
+        "4",
+        0
+      ],
+      "prompt_wav": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "CosyVoice2ZeroShotNode",
+    "_meta": {
+      "title": "CosyVoice2 音色克隆"
+    }
+  },
+  "7": {
+    "inputs": {
+      "filename_prefix": "audio/ComfyUI",
+      "audio": [
+        "6",
+        0
+      ]
+    },
+    "class_type": "SaveAudio",
+    "_meta": {
+      "title": "保存音频"
+    }
+  },
+  "8": {
+    "inputs": {
+      "speaker_name": "lihaibao",
+      "spk_model": [
+        "6",
+        1
+      ]
+    },
+    "class_type": "CosyVoiceSaveSpeakerModelNode",
+    "_meta": {
+      "title": "CosyVoice 保存说话人模型"
+    }
+  },
+  "9": {
+    "inputs": {
+      "string": "啊哈哈[laughter]，事情怎么这么多啊，明天又要开会了啊</strong>。"
+    },
+    "class_type": "Primitive string multiline [Crystools]",
+    "_meta": {
+      "title": "🪛 Primitive string multiline"
+    }
+  }
+}
