@@ -1,12 +1,12 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { Document } from "mongoose";
 import Car, { ICar } from "../models/car";
-import {successResponse,errorResponse}from "@/utils/api-response"
-import * as fs from 'fs';  
+import { successResponse, errorResponse } from "@/utils/api-response"
+import * as fs from 'fs';
 import { pipeline } from 'node:stream/promises';
 
 
-import {server} from "@/index"
+import { server } from "@/index"
 
 
 function renameFilename(originalFilename: string): string {
@@ -22,11 +22,17 @@ function renameFilename(originalFilename: string): string {
 
 
 function generateUrlFromPath(filePath: string): string {
-  const baseUrl = "http://192.168.2.20:7002/view?";
+  // const baseUrl = "http://192.168.2.20:7002/view?";
+  // const filename = filePath.substring(filePath.lastIndexOf('/') + 1); // 提取文件名
+  // const subfolder = filePath.substring(filePath.indexOf('input/') + 'input/'.length, filePath.lastIndexOf('/')); // 提取子文件夹
+
+  // const url = `${baseUrl}filename=${filename}&subfolder=${subfolder}&type=input`;
+  const baseUrl = "/input";
   const filename = filePath.substring(filePath.lastIndexOf('/') + 1); // 提取文件名
   const subfolder = filePath.substring(filePath.indexOf('input/') + 'input/'.length, filePath.lastIndexOf('/')); // 提取子文件夹
 
-  const url = `${baseUrl}filename=${filename}&subfolder=${subfolder}&type=input`;
+
+  const url = `${baseUrl}/${subfolder}/${filename}`;
   return url;
 }
 
@@ -46,19 +52,30 @@ export default async function TestController(fastify: FastifyInstance) {
 
   fastify.post("/upload", async function (_request: FastifyRequest, reply: FastifyReply) {
     try {
-        const file = await _request.file()
-        const path=`${server.config.UPLOAD_DIR}/${renameFilename(file.filename)}`
-        const writeStream = fs.createWriteStream(path);  
+      const file = await _request.file()
+      const path = `${server.config.UPLOAD_DIR}/${renameFilename(file.filename)}`
+      const writeStream = fs.createWriteStream(path);
 
-        console.log("file",file)
-       // await file.file.pipe(writeStream);  
-       await pipeline(file?.file, writeStream)
+      console.log("file", file)
+      // await file.file.pipe(writeStream);  
+      await pipeline(file?.file, writeStream)
 
 
 
       reply.send(successResponse(generateUrlFromPath(path)))
     } catch (err) {
-       reply.send(errorResponse(err.message))
+      reply.send(errorResponse(err.message))
+    }
+  });
+
+  fastify.post("/view", async function (_request: FastifyRequest, reply: FastifyReply) {
+    try {
+
+
+
+      reply.send(successResponse("a"))
+    } catch (err) {
+      reply.send(errorResponse(err.message))
     }
   });
 }

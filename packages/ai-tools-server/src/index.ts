@@ -2,8 +2,10 @@ import fastify from "fastify";
 import mongoose from "mongoose";
 import multipart from '@fastify/multipart'
 import formbody from '@fastify/formbody'
-import * as fs from 'fs';  
+import * as fs from 'fs';
 import path, { resolve } from "path";
+
+import fastifyStatic from "@fastify/static";
 
 import { fileURLToPath } from "url";
 
@@ -42,12 +44,26 @@ await server.register(multipart, {
     fieldNameSize: 100, // Max field name size in bytes
     fieldSize: 100,     // Max field value size in bytes
     fields: 10,         // Max number of non-file fields
-    fileSize: 500*1024*1024,  // For multipart forms, the max file size in bytes
+    fileSize: 500 * 1024 * 1024,  // For multipart forms, the max file size in bytes
     files: 1,           // Max number of file fields
     headerPairs: 2000,  // Max number of header key=>value pairs
     parts: 1000         // For multipart forms, the max number of parts (fields + files)
   }
 });
+
+
+await server.register(fastifyStatic, {
+  root: path.join('/home/acans/ComfyUI/output'),
+  prefix: '/output/',
+  decorateReply: false
+});
+
+await server.register(fastifyStatic, {
+  root: path.join('/home/acans/ComfyUI/input'),
+  prefix: '/input/',
+  decorateReply: false
+});
+
 
 // await server.addContentTypeParser('*', (req, done) => {
 //   //req.isMultipart = true;
