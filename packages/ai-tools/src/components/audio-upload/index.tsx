@@ -154,11 +154,15 @@ const Index = ({ value, onChange }) => {
                 success(res) {
                   closeUpload();
                   const data = JSON.parse(res.data).data;
-                  console.log("upload ok", data);
+                  console.log(
+                    "upload ok",
+                    process.env.TARO_APP_SERVER_HOST + data,
+                  );
 
                   innerAudioContextRef.current = Taro.createInnerAudioContext();
                   innerAudioContextRef.current.autoplay = false;
-                  innerAudioContextRef.current.src = data;
+                  innerAudioContextRef.current.src =
+                    process.env.TARO_APP_SERVER_HOST + data;
                   innerAudioContextRef.current.onPlay(() => {
                     console.log("开始播放");
                   });

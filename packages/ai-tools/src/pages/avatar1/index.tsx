@@ -1,7 +1,7 @@
 import { Video, View, ScrollView } from "@tarojs/components";
 import { clsx } from "clsx";
 import "./index.scss";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Steps,
   Step,
@@ -15,9 +15,30 @@ import {
 import { ArrowRight, Refresh, User } from "@nutui/icons-react-taro";
 import Taro from "@tarojs/taro";
 
+import { useTaroRequest } from "@/tools/useRequest";
+
 import ComfyUIStatus from "@/components/comfyui-status/index";
 import AudioUpload from "@/components/audio-upload/index";
 import VideoUpload from "@/components/video-upload/index";
+import { useAsyncEffect } from "ahooks";
+
+const comfyuiPath = (url) => {
+  console.log("comfyuiPath", url);
+
+  // const urlObject = new URL(url);
+  // const filename = urlObject.searchParams.get("filename");
+  // const subfolder = urlObject.searchParams.get("subfolder");
+
+  // let ret = "";
+  // if (subfolder) {
+  //   ret = subfolder + "/";
+  // }
+
+  // return ret + filename;
+
+  const newPath = url.replace(/^\/input\//, "");
+  return newPath;
+};
 
 const Index = () => {
   const [checkedAsync, setCheckedAsync] = useState(false);
@@ -25,21 +46,20 @@ const Index = () => {
   const [visible, setVisible] = useState(false);
   const [AudioValue, setAudioValue] = useState();
   const [VideoValue, setVideoValue] = useState();
+  const [pickList, setPickList] = useState([]);
 
   const [baseDesc, setBaseDesc] = useState("");
-  const listData1 = [
-    [
-      { value: 1, text: "南京市" },
-      { value: 2, text: "无锡市" },
-      { value: 3, text: "海北藏族自治区" },
-      { value: 4, text: "北京市" },
-      { value: 5, text: "连云港市" },
-      { value: 8, text: "大庆市" },
-      { value: 9, text: "绥化市" },
-      { value: 10, text: "潍坊市" },
-      { value: 12, text: "乌鲁木齐市" },
-    ],
-  ];
+
+  const CosyVoiceLoadSpeakerModelNode = useTaroRequest({
+    url: `${process.env.TARO_APP_SERVER_HOST}/api/v1/comfyui/getNodeDefs/CosyVoiceLoadSpeakerModelNode`,
+  });
+
+  const VideoCreate = useTaroRequest({
+    url: `${process.env.TARO_APP_SERVER_HOST}/api/v1/comfyui/soundvideo_createbyaudio`,
+  });
+
+  const [prompt, setprompt] = useState("");
+
   const changePicker = (list: any[], option: any, columnIndex: number) => {
     console.log(columnIndex, option);
   };
@@ -50,6 +70,29 @@ const Index = () => {
     });
     setBaseDesc(description);
   };
+
+  useAsyncEffect(async () => {
+    console.log("avatar1/index.tsx useEffect");
+    await CosyVoiceLoadSpeakerModelNode.run();
+  }, []);
+
+  useEffect(() => {
+    console.log("ai end", VideoCreate.data);
+  }, [VideoCreate.data]);
+
+  useEffect(() => {
+    console.log("CosyVoiceLoadSpeakerModelNode", CosyVoiceLoadSpeakerModelNode);
+
+    if (CosyVoiceLoadSpeakerModelNode.data) {
+      const speakerNameList = (CosyVoiceLoadSpeakerModelNode.data as any)
+        .CosyVoiceLoadSpeakerModelNode.input.required.speaker_name;
+
+      const speakerNames = speakerNameList[0]; // 假设 speaker names 在第一个子数组中
+      const result = speakerNames.map((name) => ({ value: name, text: name }));
+      console.log(result);
+      setPickList(result);
+    }
+  }, [CosyVoiceLoadSpeakerModelNode.data]);
 
   const uploadUrl = "https://my-json-server.typicode.com/linrufeng/demo/posts";
   const onStart = () => {
@@ -69,7 +112,7 @@ const Index = () => {
   return (
     <View className="page_layout">
       <View className="workspace scroll">
-        <ComfyUIStatus />
+        {/* <ComfyUIStatus /> */}
         <View>
           <View>
             {/* <span className="h-[225px] justify-center items-center flex bg-black">
@@ -122,7 +165,7 @@ const Index = () => {
               <Picker
                 title="选择音色"
                 visible={visible}
-                options={listData1}
+                options={pickList}
                 onConfirm={(list, values) => confirmPicker(list, values)}
                 onClose={() => setVisible(false)}
                 onChange={changePicker}
@@ -146,7 +189,11 @@ const Index = () => {
           defaultValue=""
           className="text-1"
           style={{ fontSize: "12px" }}
-          onChange={(value) => console.log("change", value)}
+          onChange={(value) => {
+            console.log("change", value);
+
+            setprompt(value);
+          }}
           onBlur={() => console.log("blur")}
           onFocus={() => console.log("focus")}
         />
@@ -161,8 +208,13 @@ const Index = () => {
           <Button
             block
             type="primary"
-            onClick={() => {
-              console.log("submit", AudioValue);
+            onClick={async () => {
+              console.log("submit", AudioValue, VideoValue, prompt);
+              await VideoCreate.run({
+                audio: comfyuiPath(AudioValue),
+                prompt,
+                video: comfyuiPath(VideoValue),
+              });
             }}
           >
             AI

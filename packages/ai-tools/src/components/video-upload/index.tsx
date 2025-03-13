@@ -99,7 +99,7 @@ const Index = ({ value, onChange }) => {
         <Video //http://192.168.2.20:7002/view?filename=latentsync_00004-audio.mp4
           id="video"
           className="w-full h-[300px]" // Full width, 1/4 screen height
-          src={outValue}
+          src={process.env.TARO_APP_SERVER_HOST + outValue}
           //poster="http://192.168.2.20:7002/view?filename=ComfyUI_00013_.png"
           initialTime={0}
           controls={true}
@@ -165,7 +165,10 @@ const Index = ({ value, onChange }) => {
                 success(res) {
                   closeUpload();
                   const data = JSON.parse(res.data).data;
-                  console.log("upload ok", data);
+                  console.log(
+                    "upload ok",
+                    process.env.TARO_APP_SERVER_HOST + data,
+                  );
 
                   setOutValue(data);
                   onChange(data);

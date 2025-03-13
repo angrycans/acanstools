@@ -33,16 +33,21 @@ import AudioPlay from "@/components/audio-play/index";
 import { useStore } from "@/store";
 
 const comfyuiPath = (url) => {
-  const urlObject = new URL(url);
-  const filename = urlObject.searchParams.get("filename");
-  const subfolder = urlObject.searchParams.get("subfolder");
+  console.log("comfyuiPath", url);
 
-  let ret = "";
-  if (subfolder) {
-    ret = subfolder + "/";
-  }
+  // const urlObject = new URL(url);
+  // const filename = urlObject.searchParams.get("filename");
+  // const subfolder = urlObject.searchParams.get("subfolder");
 
-  return ret + filename;
+  // let ret = "";
+  // if (subfolder) {
+  //   ret = subfolder + "/";
+  // }
+
+  // return ret + filename;
+
+  const newPath = url.replace(/^\/input\//, "");
+  return newPath;
 };
 
 const Index = () => {
@@ -59,8 +64,10 @@ const Index = () => {
   //   url: "http://192.168.2.20:7002/prompt",
   // });
   const { loading, data, error, run } = useTaroRequest({
-    url: "http://192.168.2.20:7003/api/v1/comfyui/audio2Timbre",
+    url: `${process.env.TARO_APP_SERVER_HOST}/api/v1/comfyui/audio2Timbre`,
   });
+
+  console.log("TARO_APP_SERVER_HOST", process.env.TARO_APP_SERVER_HOST);
 
   console.log("audio2timbre/index.tsx", state, AudioValue);
 

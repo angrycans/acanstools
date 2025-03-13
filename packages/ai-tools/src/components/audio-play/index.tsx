@@ -71,6 +71,8 @@ const Index = ({ value }) => {
   const [outValue, setOutValue] = useState("");
 
   const [uploading, seUploading] = useState(false);
+  const [downloading, seDownloading] = useState(false);
+
   const uploadTask = useRef<any | null>(null);
   const uploadTaskTimeout = useRef<any | null>(null);
   const AinnerAudioContextRef = useRef<any | null>(null);
@@ -92,6 +94,7 @@ const Index = ({ value }) => {
   };
 
   const onPlay = () => {
+    console.log("onPlay", playstatus.playing);
     if (!playstatus.playing) {
       AinnerAudioContextRef.current.play();
 
@@ -109,6 +112,8 @@ const Index = ({ value }) => {
       // }, 1000);
       // return () => clearInterval(interval);
     } else {
+      console.log("stop");
+
       AinnerAudioContextRef.current.stop();
       //clearInterval(interval);
       setPlaystatus({ ...playstatus, playing: false });
@@ -123,14 +128,15 @@ const Index = ({ value }) => {
   }, [AinnerAudioContextRef.current]);
   AinnerAudioContextRef;
   useEffect(() => {
-    console.log("Audio play useEffect", value);
     if (value) {
+      console.log("Audio play useEffect", value);
+
       const newUrl = new URL(
-        "http://192.168.2.20:7002/view?filename=ComfyUI_00003_.flac&subfolder=audio&type=output",
+        `${process.env.TARO_APP_SERVER_HOST}/${value.audio.audio[0].type}/${value.audio.audio[0].subfolder}/${value.audio.audio[0].filename}`,
       );
-      newUrl.searchParams.set("filename", value.audio.audio[0].filename);
-      newUrl.searchParams.set("subfolder", value.audio.audio[0].subfolder);
-      newUrl.searchParams.set("type", value.audio.audio[0].type);
+      // newUrl.searchParams.set("filename", value.audio.audio[0].filename);
+      // newUrl.searchParams.set("subfolder", value.audio.audio[0].subfolder);
+      // newUrl.searchParams.set("type", value.audio.audio[0].type);
 
       console.log("newUrl", newUrl.toString());
       const src = newUrl.toString();
@@ -224,7 +230,41 @@ const Index = ({ value }) => {
         <View className="flex-1 px-4">
           <Progress percent={currentTime / playstatus.duration / 10} />
         </View>
-        <Download />
+        <Button
+          loading={downloading}
+          icon={<Download />}
+          fill={"none"}
+          size="xlarge"
+          onClick={() => {
+            console.log("download start", AinnerAudioContextRef.current.src);
+            seDownloading(true);
+            Taro.downloadFile({
+              url: AinnerAudioContextRef.current.src,
+              success(res) {
+                console.log(JSON.stringify(res));
+                seDownloading(false);
+              },
+              fail(res) {
+                console.log(`downloadFile fail: ${JSON.stringify(res)}`);
+              },
+            });
+          }}
+        />
+        {/* <Download
+           loading={downloading}
+          onClick={() => {
+            console.log("download start", AinnerAudioContextRef.current.src);
+            Taro.downloadFile({
+              url: AinnerAudioContextRef.current.src,
+              success(res) {
+                console.log(JSON.stringify(res));
+              },
+              fail(res) {
+                console.log(`downloadFile fail: ${JSON.stringify(res)}`);
+              },
+            });
+          }}
+        /> */}
       </View>
     </View>
   );
