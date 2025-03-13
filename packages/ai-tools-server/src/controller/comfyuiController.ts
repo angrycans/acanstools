@@ -9,6 +9,11 @@ import { ComfyApi, CallWrapper, PromptBuilder, TSamplerName, TSchedulerName, } f
 
 import workflowJson from "../../assets/workflow/workflow.json";
 import audio2Timbre from "../../assets/workflow/audio2Timbre.json";
+import soundvideobyaudio from "../../assets/workflow/soundvideo_createbyaudio.json";
+
+
+
+const api = new ComfyApi("http://192.168.2.20:7002").init();
 
 
 const randomInt = (min: number, max: number) => {
@@ -29,6 +34,13 @@ export default async function TestController(fastify: FastifyInstance) {
       company: "none",
       email: "angrycans@gmail.com",
     });
+  });
+
+  fastify.get("/getNodeDefs/:node", async function (_request: FastifyRequest, reply: FastifyReply) {
+    const node = (_request.params as any).node;
+    const ret = await api.getNodeDefs(node);
+    reply.send(successResponse({ ...ret }))
+
   });
 
   fastify.post("/audio2Timbre", function (_request: FastifyRequest, reply: FastifyReply) {
@@ -53,7 +65,7 @@ export default async function TestController(fastify: FastifyInstance) {
           .setInputNode("prompt", "9.inputs.string")
           .setInputNode("seed", "6.inputs.seed")
 
-          .setOutputNode("audio", "7")
+          .setOutputNode("audio", "19")
 
         console.log("audio2TimbreWorkflow end")
 
@@ -62,7 +74,7 @@ export default async function TestController(fastify: FastifyInstance) {
           .input("prompt", prompt)
           .input("speaker_name", speaker_name)
           .input("seed", seed())
-        console.log("workflow end")
+        // console.log("workflow end")
 
 
         new CallWrapper(api, workflow)
@@ -96,9 +108,81 @@ export default async function TestController(fastify: FastifyInstance) {
   });
 
 
+  fastify.post("/soundvideo_createbyaudio", function (_request: FastifyRequest, reply: FastifyReply) {
+    try {
+
+      const { video, prompt, audio } = _request.body as { audio: string; prompt: string, video: string };
+
+      console.log("soundvideo_createbyaudio", _request.body)
+
+      if (video && prompt && audio) {
+
+        console.log("req params", _request.body)
+        const api = new ComfyApi("http://192.168.2.20:7002").init();
+
+        const audio2TimbreWorkflow = new PromptBuilder(
+          soundvideobyaudio,
+          ["audio", "speaker_name", "prompt", "seed", "video", "seed2"],
+          ["video"],
+        )
+          .setInputNode("audio", "59.inputs.audio")
+          .setInputNode("video", "40.inputs.video")
+
+          .setInputNode("prompt", "56.inputs.string")
+          .setInputNode("seed", "55.inputs.seed")
+          .setInputNode("seed2", "43.inputs.seed")
+
+
+          .setOutputNode("video", "41")
+
+        console.log("audio2TimbreWorkflow end")
+
+        const workflow = audio2TimbreWorkflow
+          .input("audio", audio)
+          .input("prompt", prompt)
+          .input("video", video)
+          .input("seed", seed())
+          .input("seed2", seed())
+
+        // console.log("workflow end")
+
+
+        new CallWrapper(api, workflow)
+          .onFinished((data) => {
+            console.log("onFinished ", data)
+            //console.log(data.images?.images.map((img: any) => api.getPathImage(img)));
+            //reply.send(successResponse(data))
+
+
+          })
+          .onPending((promptId) => {
+            console.log("onPending ", promptId);
+            reply.send(successResponse(promptId))
+          })
+          .onStart((promptId) => { console.log("onStart ", promptId) })
+          .onOutput((out) => { console.log("onOutput", out) })
+          .onProgress((NodeProgress, promptId) => { console.log("NodeProgress", NodeProgress) })
+          .onFailed((err, promptId) => {
+            console.log("onFailed ", err, promptId);
+            //reply.send(errorResponse(err))
+
+          })
+          .run();
+
+      } else {
+        reply.send(errorResponse("参数错误"))
+      }
+    } catch (err) {
+      console.log("catch err", err)
+      reply.send(errorResponse(err.message))
+    }
+
+
+  });
+
+
   fastify.get("/test", function (_request: FastifyRequest, reply: FastifyReply) {
     try {
-      const api = new ComfyApi("http://192.168.2.20:7002").init();
 
       const workflow = new PromptBuilder(
         workflowJson,
