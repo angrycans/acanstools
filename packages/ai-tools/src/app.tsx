@@ -26,26 +26,31 @@ const Root = ({ children }: { children: React.ReactNode }) => {
         tt.login({
           async success(res: any) {
             console.log("tt.login ok", res);
+
+            await Taro.request({
+              url:
+                process.env.TARO_APP_SERVER_HOST +
+                "/api/v1/lark/login/" +
+                res.code,
+              header: {
+                "content-type": "application/json", // 默认值
+              },
+              success: function (res) {
+                console.log("/api/v1/lark/login/", res.data);
+              },
+            });
+
             tt.getUserInfo({
               withCredentials: true,
               success(res) {
                 console.log("tt.getUserInfo", res);
+
                 updateState((draft) => {
-                  draft.username = JSON.parse(res.rawData).nickName;
+                  draft.userInfo = JSON.parse(res.rawData).userInfo;
                 });
               },
               fail(res) {
                 console.log(`getUserInfo fail: ${JSON.stringify(res)}`);
-
-                // Taro.request({
-                //   url: "http://127.0.0.1:7003/api/v1/lark/login/" + res.code,
-                //   header: {
-                //     "content-type": "application/json", // 默认值
-                //   },
-                //   success: function (res) {
-                //     console.log("/api/v1/lark/login/", res.data);
-                //   },
-                // });
               },
             });
           },

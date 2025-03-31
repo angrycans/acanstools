@@ -6,6 +6,7 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
+import { userInfo } from "os";
 // // 定义 context 值接口
 export interface StateContextType {
   state: any;
@@ -14,7 +15,7 @@ export interface StateContextType {
 
 const defaultState = {
   count: 0,
-  username: "",
+  userInfo: null,
 };
 // 创建一个 context 对象并导出其 Provider 和 Consumer
 const StateContext = createContext<StateContextType | null>(null);

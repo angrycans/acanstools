@@ -1,5 +1,7 @@
+import { useStore } from "@/store";
 import { request } from "@tarojs/taro";
 import { useEffect, useState } from "react";
+
 
 /** HTTP 请求方法 */
 interface Method {
@@ -39,6 +41,8 @@ export const useTaroRequest = (
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const { state, updateState } = useStore();
+  
 
   //const { baseUrl, header, ...otherConfig } = config || {};
 
@@ -57,6 +61,7 @@ export const useTaroRequest = (
         url,
         header: {
           contentType: "application/json",
+          Authorization: state.userInfo ? state.userInfo.token : "",
         },
       });
 
