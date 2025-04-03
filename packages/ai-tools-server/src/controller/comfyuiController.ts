@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { Document } from "mongoose";
+import mongoose from "mongoose";
 import Car, { ICar } from "../models/car";
 import { successResponse, errorResponse } from "@/utils/api-response"
 import * as fs from 'fs';
@@ -10,6 +10,8 @@ import { ComfyApi, CallWrapper, PromptBuilder, TSamplerName, TSchedulerName, } f
 import workflowJson from "../../assets/workflow/workflow.json";
 import audio2Timbre from "../../assets/workflow/audio2Timbre.json";
 import soundvideobyaudio from "../../assets/workflow/soundvideo_createbyaudio.json";
+import { ComfyuiQueue, ComfyuiStatus } from "@/models/comfyui_queues";
+import { authenticate } from "@/middlewares/auth";
 
 
 
@@ -24,7 +26,10 @@ export const seed = () => randomInt(1000, 9999);
 
 export default async function TestController(fastify: FastifyInstance) {
   // /api/v1/comfyui
-  fastify.get("/", async function (_request: FastifyRequest, reply: FastifyReply) {
+  fastify.get("/", { preHandler: authenticate }, async function (_request: FastifyRequest, reply: FastifyReply) {
+    console.log("authorizationHeader", _request.headers.authorization);
+
+    console.log("auth", (_request as any).auth)
     reply.send({
       balance: "$0.01",
       picture: "U NO HAVE PICTURE",
@@ -45,6 +50,7 @@ export default async function TestController(fastify: FastifyInstance) {
 
   fastify.post("/audio2Timbre", function (_request: FastifyRequest, reply: FastifyReply) {
     try {
+
 
       const { speaker_name, prompt, audio } = _request.body as { audio: string; prompt: string, speaker_name: string };
 
@@ -102,6 +108,8 @@ export default async function TestController(fastify: FastifyInstance) {
     } catch (err) {
       console.log("catch err", err)
       reply.send(errorResponse(err.message))
+
+
     }
 
 
@@ -110,7 +118,23 @@ export default async function TestController(fastify: FastifyInstance) {
 
   fastify.post("/soundvideo_createbyaudio", function (_request: FastifyRequest, reply: FastifyReply) {
     try {
+      const api = new ComfyApi("http://192.168.2.20:7002").init();
 
+      // const newQueueItem = new ComfyuiQueue({
+      //   client_id: api.clientId,
+      //   workflow: "example_workflow",
+      //   status: ComfyuiStatus.pending,
+      //   progress: 0,
+      //   user_open_id: "user_456",
+      //   user_mobile: "1234567890",
+      //   files: [
+      //     {
+      //       iname: "example_file.txt",
+      //       type: "text",
+      //       path: "/files/example_file.txt",
+      //     },
+      //   ],
+      // });
       const { video, prompt, audio } = _request.body as { audio: string; prompt: string, video: string };
 
       console.log("soundvideo_createbyaudio", _request.body)
@@ -118,7 +142,6 @@ export default async function TestController(fastify: FastifyInstance) {
       if (video && prompt && audio) {
 
         console.log("req params", _request.body)
-        const api = new ComfyApi("http://192.168.2.20:7002").init();
 
         const audio2TimbreWorkflow = new PromptBuilder(
           soundvideobyaudio,

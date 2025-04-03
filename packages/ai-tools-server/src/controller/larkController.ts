@@ -14,9 +14,13 @@ export default async function LarkController(fastify: FastifyInstance) {
       disableTokenCache: false,
     });
 
+
+    // fetch("https://open.feishu.cn/open-apis/mina/v2/tokenLoginValidate",{method:"POST"})
+    // return;
     const code = (_request.params as any).code;
     const res = await client.authen.accessToken.create({ data: { code, grant_type: "authorization_code" } });
     if (res.code == 0) {
+      console.log("client.authen.accessToken.create", res);
       const { access_token, refresh_token, open_id } = res.data;
       //   client.authen.v1.userInfo
       //     .get({})
@@ -30,8 +34,8 @@ export default async function LarkController(fastify: FastifyInstance) {
       //     });
 
       const ret2 = await client.authen.v1.userInfo.get({}, lark.withUserAccessToken(access_token));
-      console.log(ret2);
-      reply.send({ code: 0, data: { access_token, refresh_token, open_id } });
+      console.log("client.authen.v1.userInfo", ret2);
+      reply.send({ code: 0, data: { access_token, refresh_token, open_id, mobile: ret2.data?.mobile?.slice(-11) } });
     } else {
       reply.send({ code: -1, msg: res.msg });
     }

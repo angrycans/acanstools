@@ -8,6 +8,7 @@ import path, { resolve } from "path";
 import fastifyStatic from "@fastify/static";
 
 import { fileURLToPath } from "url";
+import * as lark from "@larksuiteoapi/node-sdk";
 
 
 import config from "./plugins/config";
@@ -69,6 +70,16 @@ await server.register(fastifyStatic, {
 //   //req.isMultipart = true;
 //   done(null, req)
 // });
+
+// Extract the token
+const larkClient = new lark.Client({
+  appId: "cli_a724240555b8d00e",
+  appSecret: "a7cBwE2gkjEJ6dpXQROvjepfAsWDCC4L",
+  disableTokenCache: false,
+});
+
+
+await server.decorate('larkClient', larkClient);
 
 
 await server.register(router);
