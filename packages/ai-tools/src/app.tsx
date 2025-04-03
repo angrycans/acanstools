@@ -35,8 +35,21 @@ const Root = ({ children }: { children: React.ReactNode }) => {
               header: {
                 "content-type": "application/json", // 默认值
               },
-              success: function (res) {
+              success: async function (res) {
                 console.log("/api/v1/lark/login/", res.data);
+                updateState((draft) => {
+                  draft.authToken = res.data.data.access_token;
+                });
+                await Taro.request({
+                  url: process.env.TARO_APP_SERVER_HOST + "/api/v1/comfyui",
+                  header: {
+                    "content-type": "application/json", // 默认值
+                    authorization: "Bearer " + res.data.data.access_token,
+                  },
+                  success: function (res) {
+                    console.log("/api/v1/comfyui", res.data);
+                  },
+                });
               },
             });
 
